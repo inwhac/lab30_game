@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>활동/미션 — my Canvas</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f6fa;
+  --bg2: #ffffff;
+  --bg3: #f0f1f7;
+  --card: #ffffff;
+  --card2: #f8f9fc;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.12);
+  --text: #1a1d2e;
+  --text2: #6b7280;
+  --text3: #9ca3af;
+  --accent: #4f6ef7;
+  --accent2: #6b84f9;
+  --accent-bg: rgba(79,110,247,0.08);
+  --accent-light: #eef1fe;
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,0.08);
+  --green-light: #ecfdf5;
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,0.08);
+  --amber-light: #fffbeb;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── 탑바 ── */
+.topbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.topbar-left { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
+.topbar-left .cur { color: var(--text); font-weight: 600; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--accent); border: 1.5px solid rgba(79,110,247,0.2); }
+
+/* ── 메인 레이아웃 ── */
+.page { max-width: 1080px; margin: 0 auto; padding: 24px 20px 60px; }
+
+/* ── 탑 탭 (배지 / 랭킹 선택용) ── */
+.main-tabs { display: flex; gap: 0; background: var(--card); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.main-tab { flex: 1; padding: 12px 0; text-align: center; font-size: 14px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; }
+.main-tab:hover { color: var(--text); background: var(--bg3); }
+.main-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); background: var(--accent-light); }
+
+/* ══ 패널들 ══ */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── 홈 패널 그리드 ── */
+.home-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ─── 메인 미션 카드 ─── */
+.mission-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.mission-hero {
+  background: linear-gradient(160deg, #e8ecff 0%, #f0f4ff 50%, #e4f0ff 100%);
+  padding: 24px 20px 0;
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.persona-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: white;
+  border: 1px solid rgba(79,110,247,0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(79,110,247,0.1);
+}
+
+/* 캐릭터 SVG 영역 */
+.character-stage {
+  width: 160px;
+  height: 160px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.char-svg { width: 100%; height: 100%; }
+
+/* 레벨 배지 */
+.level-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(79,110,247,0.4);
+}
+
+.mission-body { padding: 20px; }
+
+.mission-level-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.mission-level-info { }
+.mission-level-main { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); line-height: 1.2; }
+.mission-level-main span { color: var(--accent); }
+.mission-level-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+.btn-change {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 6px 11px;
+  font-size: 12px; color: var(--text2); cursor: pointer;
+  transition: all 0.15s; font-family: inherit;
+}
+.btn-change:hover { border-color: var(--accent2); color: var(--accent); background: var(--accent-light); }
+
+/* XP 정보 */
+.xp-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+.xp-row .now { font-weight: 700; color: var(--text); font-size: 14px; }
+.xp-row .need { color: var(--text3); }
+
+.xp-bar { width: 100%; height: 10px; background: var(--bg3); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
+.xp-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--accent) 0%, #818cf8 100%);
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.xp-fill::after { content:''; position:absolute; right:0; top:0; width:3px; height:100%; background:rgba(255,255,255,0.8); border-radius:2px; }
+.xp-remain { font-size: 11px; color: var(--text3); text-align: right; }
+
+/* 레벨 스텝 */
+.steps-row { display: flex; align-items: center; gap: 3px; margin-top: 16px; }
+.step { flex: 1; height: 5px; border-radius: 3px; background: var(--bg3); cursor: pointer; transition: all 0.2s; }
+.step.done { background: var(--accent); }
+.step.cur { background: var(--accent2); box-shadow: 0 0 0 2px rgba(79,110,247,0.2); }
+.steps-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); margin-top: 5px; }
+.steps-label .cur-label { color: var(--accent); font-weight: 700; }
+
+/* ─── 오른쪽 컬럼 ─── */
+.right-col { display: flex; flex-direction: column; gap: 14px; }
+
+/* ─── 현황 대시보드 ─── */
+.dash-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.dash-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px;
+  box-shadow: var(--shadow); text-align: center;
+}
+.dash-icon { font-size: 20px; margin-bottom: 6px; }
+.dash-val { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; margin-bottom: 4px; }
+.dash-lbl { font-size: 11px; color: var(--text2); }
+
+/* ─── 미션 박스 ─── */
+.mission-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+  flex: 1;
+}
+.mission-box-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.mission-box-tab {
+  flex: 1; padding: 11px; text-align: center;
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all 0.15s;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.mission-box-tab:hover { color: var(--text); background: var(--bg3); }
+.mission-box-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-light); }
+
+.mission-box-body { padding: 16px; }
+
+/* 미션 아이템 */
+.m-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.m-item:last-child { border-bottom: none; }
+.m-check {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--border2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.m-check.done { background: var(--green); border-color: var(--green); }
+.m-check.done::after { content:''; display:block; width:5px; height:9px; border:2px solid #fff; border-top:none; border-left:none; transform:rotate(45deg) translate(-1px,-1px); }
+.m-info { flex: 1; min-width: 0; }
+.m-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.m-desc { font-size: 11px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-item.done .m-name { color: var(--text2); text-decoration: line-through; }
+.xp-tag {
+  display: inline-flex; align-items: center;
+  background: var(--green-light); border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 20px; padding: 3px 9px;
+  font-size: 12px; font-weight: 700; color: var(--green); flex-shrink: 0;
+}
+.xp-tag.done { opacity: 0.5; }
+
+.onboarding-complete {
+  margin-top: 14px; padding: 12px 14px;
+  background: var(--green-light); border-radius: var(--radius-sm);
+  border: 1px solid rgba(16,185,129,0.2);
+  display: flex; align-items: center; gap: 10px;
+}
+.onboarding-complete .oc-icon { font-size: 20px; }
+.oc-title { font-size: 13px; font-weight: 700; color: var(--green); }
+.oc-sub { font-size: 11px; color: var(--text2); }
+
+/* ─── 이력 ─── */
+.history-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+}
+.history-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.history-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.history-count { font-size: 12px; color: var(--text3); }
+.h-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.h-item:last-child { border-bottom: none; }
+.h-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.h-info { flex: 1; }
+.h-name { font-size: 13px; font-weight: 500; }
+.h-meta { font-size: 11px; color: var(--text3); }
+.h-xp { font-size: 13px; font-weight: 700; color: var(--green); flex-shrink: 0; }
+
+/* ══ 배지 패널 ══ */
+.badge-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.badge-panel-title { font-size: 16px; font-weight: 700; }
+.badge-panel-sub { font-size: 13px; color: var(--text2); }
+.badge-panel-sub span { color: var(--green); font-weight: 600; }
+
+.badge-onboard {
+  background: var(--amber-light); border: 1px solid rgba(245,158,11,0.25);
+  border-radius: var(--radius-sm); padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.badge-onboard .bo-emoji { font-size: 24px; }
+.bo-name { font-size: 14px; font-weight: 700; color: #92400e; }
+.bo-date { font-size: 11px; color: var(--amber); }
+.bo-tag { margin-left: auto; background: rgba(245,158,11,0.15); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: var(--amber); }
+
+.badge-persona-section { margin-bottom: 24px; }
+.bps-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.badge-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.badge-item {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 8px;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+.badge-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent2); }
+.badge-item.unlocked { background: var(--accent-light); border-color: rgba(79,110,247,0.25); }
+.badge-item.locked { opacity: 0.4; filter: grayscale(0.6); }
+.b-step-row { display: flex; justify-content: center; gap: 2px; margin-bottom: 7px; }
+.b-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--bg3); }
+.b-dot.on { background: var(--accent); }
+.b-emoji { font-size: 26px; margin-bottom: 5px; display: block; }
+.b-name { font-size: 11px; font-weight: 600; color: var(--text2); line-height: 1.3; }
+.badge-item.unlocked .b-name { color: var(--accent); }
+
+/* 배지 모달 */
+.modal-ov {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); z-index: 200;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.modal-ov.open { display: flex; }
+.modal {
+  background: var(--card); border-radius: 20px;
+  padding: 28px; width: 320px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  position: relative; animation: popIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-x { position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; border-radius: 50%; background: var(--bg3); border: none; cursor: pointer; font-size: 13px; color: var(--text2); display: flex; align-items: center; justify-content: center; }
+.modal-x:hover { background: var(--border); color: var(--text); }
+.m-emoji-big { font-size: 52px; text-align: center; display: block; margin-bottom: 10px; }
+.m-badge-name { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 4px; }
+.m-persona-label { font-size: 12px; color: var(--accent); text-align: center; margin-bottom: 14px; }
+.m-status-tag { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin: 0 auto 16px; width: fit-content; }
+.m-status-tag.ok { background: var(--green-light); color: var(--green); }
+.m-status-tag.no { background: var(--bg3); color: var(--text2); }
+.m-divider { height: 1px; background: var(--border); margin: 0 0 14px; }
+.m-cond-title { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
+.m-cond-item { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; padding: 3px 0; }
+.m-cond-item::before { content: '·'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+/* ══ 랭킹 패널 ══ */
+.rank-outer { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.rank-subtabs { display: flex; border-bottom: 1px solid var(--border); }
+.rank-subtab { flex: 1; padding: 12px; text-align: center; font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.15s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.rank-subtab:hover { color: var(--text); background: var(--bg3); }
+.rank-subtab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-light); }
+.rank-body { padding: 0; }
+.rank-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--border); }
+.rank-item:last-child { border-bottom: none; }
+.rank-item.me { background: var(--accent-light); }
+.rank-num { width: 26px; text-align: center; font-size: 14px; font-weight: 800; color: var(--text2); flex-shrink: 0; }
+.rank-num.g { color: #d97706; }
+.rank-num.s { color: #64748b; }
+.rank-num.b { color: #b45309; }
+.rank-av { width: 36px; height: 36px; border-radius: 50%; background: var(--bg3); border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.rank-info { flex: 1; }
+.rank-name { font-size: 13.5px; font-weight: 600; }
+.rank-sub { font-size: 11px; color: var(--text3); }
+.rank-xp { background: var(--amber-light); border: 1px solid rgba(245,158,11,0.2); border-radius: 20px; padding: 3px 11px; font-size: 12px; font-weight: 700; color: var(--amber); flex-shrink: 0; }
+.rank-my-xp { background: var(--accent-light); border: 1px solid rgba(79,110,247,0.2); border-radius: 20px; padding: 3px 11px; font-size: 12px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+.rank-gap { text-align: center; padding: 10px; font-size: 12px; color: var(--text3); border-bottom: 1px solid var(--border); }
+
+/* ══ 온보딩 팝업 ══ */
+.popup-ov {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 300; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px); animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.popup-card {
+  background: white; border-radius: 24px; padding: 32px 28px;
+  width: 380px; max-width: calc(100vw - 40px);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+  position: relative; animation: slideUp 0.35s cubic-bezier(0.34,1.3,0.64,1);
+}
+@keyframes slideUp { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+.popup-close { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; border-radius: 50%; background: var(--bg3); border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--text2); }
+.popup-badge-icon { font-size: 56px; text-align: center; display: block; margin-bottom: 8px; animation: bounce 0.6s 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes bounce { from { transform: scale(0); } to { transform: scale(1); } }
+.popup-title { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px; letter-spacing: -0.5px; }
+.popup-title span { color: var(--accent); }
+.popup-sub { font-size: 14px; color: var(--text2); text-align: center; margin-bottom: 20px; line-height: 1.7; }
+.popup-badge-name { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--amber-light); border: 1.5px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 10px 16px; margin-bottom: 20px; }
+.pbn-icon { font-size: 24px; }
+.pbn-text { font-size: 15px; font-weight: 700; color: #92400e; }
+.popup-missions { background: var(--bg3); border-radius: 12px; padding: 14px; margin-bottom: 22px; }
+.pm-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; }
+.pm-check { width: 18px; height: 18px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pm-check::after { content:''; display:block; width:4px; height:7px; border:1.5px solid #fff; border-top:none; border-left:none; transform:rotate(45deg) translate(-0.5px,-0.5px); }
+.pm-label { flex: 1; color: var(--text); }
+.pm-xp { font-size: 12px; font-weight: 700; color: var(--green); }
+.pm-total { display: flex; justify-content: space-between; border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; font-size: 13px; }
+.pm-total .lbl { color: var(--text2); }
+.pm-total .val { font-weight: 800; color: var(--green); }
+.popup-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.popup-btn:hover { background: #3d5ee0; transform: translateY(-1px); }
+.popup-xp-gained { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: var(--text3); margin-top: 12px; }
+
+
+/* ── 배지 4×7 그리드 ── */
+.bp-grid-wrap { overflow-x: auto; }
+.bp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+  min-width: 600px;
+}
+.bp-header-cell {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 4px;
+  text-align: center; font-size: 11px; font-weight: 600;
+  color: var(--text2); line-height: 1.5;
+}
+.bp-row-label { display: none; }
+/* 배지 아이템 b-step-row 제거 후 단순화 */
+.badge-item { padding: 10px 6px; }
+.rank-sub { font-size: 11px; color: var(--text3); }
+
+/* ── 반응형 ── */
+@media (max-width: 800px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .badge-row { grid-template-columns: repeat(3, 1fr); }
+  .popup-card { border-radius: 24px; }
+}
+@media (max-width: 560px) {
+  .dash-row { grid-template-columns: repeat(3, 1fr); }
+  .badge-row { grid-template-columns: repeat(3, 1fr); }
+  /* 모바일 바텀시트 */
+  .popup-ov { align-items: flex-end; padding: 0; }
+  .popup-card {
+    width: 100%; max-width: 100%; border-radius: 24px 24px 0 0;
+    padding: 28px 20px 36px;
+    animation: sheetUp 0.4s cubic-bezier(0.34,1.1,0.64,1);
+  }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+}
+@media (max-width: 420px) {
+  .page { padding: 16px 12px 60px; }
+  .main-tab { font-size: 12px; padding: 11px 4px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ 온보딩 완료 팝업 ══ -->
+<div class="popup-ov" id="popup-ov">
+  <div class="popup-card">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <span class="popup-badge-icon">⭐</span>
+    <div class="popup-title">첫 번째 배지 <span>획득!</span></div>
+    <div class="popup-sub">연수원의 주요 공간을 모두 탐색하셨어요.<br>게이미피케이션 여정이 시작됐습니다!</div>
+    <div class="popup-badge-name">
+      <span class="pbn-icon">⭐</span>
+      <span class="pbn-text">여정의 시작</span>
+    </div>
+    <div class="popup-missions">
+      <div class="pm-row"><div class="pm-check"></div><span class="pm-label">첫 로그인</span><span class="pm-xp">+20 XP</span></div>
+      <div class="pm-row"><div class="pm-check"></div><span class="pm-label">Contents 살펴보기</span><span class="pm-xp">+20 XP</span></div>
+      <div class="pm-row"><div class="pm-check"></div><span class="pm-label">Connect 살펴보기</span><span class="pm-xp">+20 XP</span></div>
+      <div class="pm-row"><div class="pm-check"></div><span class="pm-label">my Canvas 살펴보기</span><span class="pm-xp">+20 XP</span></div>
+      <div class="pm-total"><span class="lbl">총 획득 경험치</span><span class="val">80 XP 🎉</span></div>
+    </div>
+    <button class="popup-btn" onclick="closePopup()">🚀 활동/미션 확인하기</button>
+    <div class="popup-xp-gained">획득한 경험치로 레벨업에 도전해보세요!</div>
+  </div>
+</div>
+
+<!-- ── 탑바 ── -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span>my Canvas</span>
+    <span style="color:var(--text3)">›</span>
+    <span class="cur">활동/미션</span>
+  </div>
+  <div class="topbar-right">
+    <div class="avatar">최</div>
+    <span style="font-size:13px;color:var(--text2)">최인화</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- 메인 탭 -->
+  <div class="main-tabs">
+    <div class="main-tab active" onclick="switchMain('home')">🏠 활동 홈</div>
+    <div class="main-tab" onclick="switchMain('badge')">🏅 배지</div>
+    <div class="main-tab" onclick="switchMain('ranking')">🏆 랭킹</div>
+  </div>
+
+  <!-- ════ 홈 패널 ════ -->
+  <div class="panel active" id="panel-home">
+    <div class="home-grid">
+
+      <!-- 왼쪽: 메인 미션 -->
+      <div class="mission-card">
+        <div class="mission-hero">
+          <div class="persona-pill">🎓 학습 마스터</div>
+
+          <!-- 캐릭터 SVG: Lv.4 학습 마스터 — 안경 쓰고 책 들고 있는 곰 -->
+          <div class="character-stage">
+            <svg class="char-svg" viewBox="0 0 160 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- 그림자 -->
+              <ellipse cx="80" cy="168" rx="38" ry="7" fill="rgba(0,0,0,0.08)"/>
+              <!-- 몸통 -->
+              <rect x="38" y="90" width="84" height="72" rx="24" fill="#c8a882"/>
+              <!-- 배 -->
+              <ellipse cx="80" cy="118" rx="28" ry="26" fill="#e2c49a"/>
+              <!-- 왼팔 -->
+              <rect x="16" y="96" width="28" height="18" rx="9" fill="#c8a882" transform="rotate(-15 16 96)"/>
+              <!-- 오른팔 (책 들고 있는) -->
+              <rect x="116" y="93" width="28" height="18" rx="9" fill="#c8a882" transform="rotate(15 116 93)"/>
+              <!-- 책 -->
+              <rect x="118" y="102" width="26" height="32" rx="4" fill="#4f6ef7"/>
+              <rect x="120" y="107" width="22" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+              <rect x="120" y="112" width="18" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
+              <rect x="120" y="117" width="20" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
+              <rect x="120" y="122" width="15" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+              <!-- 다리 왼 -->
+              <rect x="50" y="145" width="24" height="22" rx="11" fill="#b8956f"/>
+              <!-- 다리 오른 -->
+              <rect x="86" y="145" width="24" height="22" rx="11" fill="#b8956f"/>
+              <!-- 발 왼 -->
+              <ellipse cx="62" cy="167" rx="13" ry="7" fill="#a07850"/>
+              <!-- 발 오른 -->
+              <ellipse cx="98" cy="167" rx="13" ry="7" fill="#a07850"/>
+              <!-- 머리 -->
+              <circle cx="80" cy="68" r="38" fill="#d4aa80"/>
+              <!-- 귀 왼 -->
+              <circle cx="47" cy="40" r="14" fill="#d4aa80"/>
+              <circle cx="47" cy="40" r="9" fill="#f0c8a0"/>
+              <!-- 귀 오른 -->
+              <circle cx="113" cy="40" r="14" fill="#d4aa80"/>
+              <circle cx="113" cy="40" r="9" fill="#f0c8a0"/>
+              <!-- 얼굴 내부 -->
+              <ellipse cx="80" cy="74" rx="26" ry="22" fill="#ecc89a"/>
+              <!-- 안경 -->
+              <rect x="57" y="62" width="20" height="13" rx="5" fill="none" stroke="#3d3330" stroke-width="2.5"/>
+              <rect x="83" y="62" width="20" height="13" rx="5" fill="none" stroke="#3d3330" stroke-width="2.5"/>
+              <line x1="77" y1="68" x2="83" y2="68" stroke="#3d3330" stroke-width="2.5"/>
+              <line x1="45" y1="67" x2="57" y2="67" stroke="#3d3330" stroke-width="1.5"/>
+              <line x1="103" y1="67" x2="115" y2="67" stroke="#3d3330" stroke-width="1.5"/>
+              <!-- 눈 -->
+              <circle cx="67" cy="68" r="3.5" fill="#3d3330"/>
+              <circle cx="93" cy="68" r="3.5" fill="#3d3330"/>
+              <circle cx="68.5" cy="66.5" r="1" fill="white"/>
+              <circle cx="94.5" cy="66.5" r="1" fill="white"/>
+              <!-- 코 -->
+              <ellipse cx="80" cy="76" rx="4" ry="3" fill="#b07840"/>
+              <!-- 입 -->
+              <path d="M72 82 Q80 88 88 82" stroke="#8a5530" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <!-- 볼터치 -->
+              <ellipse cx="60" cy="78" rx="7" ry="4" fill="rgba(255,150,120,0.25)"/>
+              <ellipse cx="100" cy="78" rx="7" ry="4" fill="rgba(255,150,120,0.25)"/>
+              <!-- 졸업모자 (Lv.4부터 부분 등장) -->
+              <rect x="58" y="35" width="44" height="7" rx="2" fill="#2d2d40"/>
+              <rect x="68" y="26" width="24" height="12" rx="3" fill="#2d2d40"/>
+              <rect x="95" y="31" width="3" height="10" fill="#fbbf24"/>
+              <rect x="93" y="40" width="7" height="3" rx="1" fill="#fbbf24"/>
+            </svg>
+            <div class="level-badge">Lv.4</div>
+          </div>
+        </div>
+
+        <div class="mission-body">
+          <div class="mission-level-row">
+            <div class="mission-level-info">
+              <div class="mission-level-main">레벨 <span>4</span></div>
+              
+            </div>
+            <button class="btn-change" onclick="alert('캐릭터 변경 화면으로 이동합니다')">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6a4 4 0 018 0M10 6a4 4 0 01-8 0" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 4.5l1.5 1.5-1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              캐릭터 변경
+            </button>
+          </div>
+
+          <div class="xp-row">
+            <span><span class="now">1,240 XP</span> 보유</span>
+            <span class="need">Lv.5까지 1,500 XP</span>
+          </div>
+          <div class="xp-bar">
+            <div class="xp-fill" id="xp-fill" style="width:0%"></div>
+          </div>
+          <div class="xp-remain">앞으로 260 XP 더 모으면 레벨업 🚀</div>
+
+          <div class="steps-row" style="margin-top:18px">
+            <div class="step done" title="Lv.1"></div>
+            <div class="step done" title="Lv.2"></div>
+            <div class="step done" title="Lv.3"></div>
+            <div class="step cur" title="Lv.4 현재"></div>
+            <div class="step" title="Lv.5"></div>
+            <div class="step" title="Lv.6"></div>
+            <div class="step" title="Lv.7"></div>
+            <div class="step" title="Lv.8"></div>
+            <div class="step" title="Lv.9"></div>
+            <div class="step" title="Lv.10"></div>
+          </div>
+          <div class="steps-label">
+            <span>Lv.1</span><span class="cur-label">Lv.4 현재</span><span>Lv.10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오른쪽 컬럼 -->
+      <div class="right-col">
+
+        <!-- 현황 대시보드 -->
+        <div class="dash-row">
+          <div class="dash-card">
+            <div class="dash-icon">⚡</div>
+            <div class="dash-val" style="color:var(--accent)">7</div>
+            <div class="dash-lbl">오늘 활동</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-icon">✨</div>
+            <div class="dash-val" style="color:var(--green)">140</div>
+            <div class="dash-lbl">오늘 XP</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-icon">🔥</div>
+            <div class="dash-val" style="color:var(--amber)">12</div>
+            <div class="dash-lbl">연속 출석일</div>
+          </div>
+        </div>
+
+        <!-- 미션 박스 -->
+        <div class="mission-box">
+          <div class="mission-box-tabs">
+            <div class="mission-box-tab active" onclick="switchMission(this,'today')">오늘의 미션</div>
+            <div class="mission-box-tab" onclick="switchMission(this,'onboarding')">온보딩 미션</div>
+          </div>
+
+          <div class="mission-box-body" id="mb-onboarding" style="display:none">
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">첫 로그인</div><div class="m-desc">최초 로그인 이력 발생 시 자동 완료</div></div><div class="xp-tag done">+20 XP</div></div>
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">Contents 살펴보기</div><div class="m-desc">Contents 메뉴 접속 → 온보딩 팝업 확인</div></div><div class="xp-tag done">+20 XP</div></div>
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">Connect 살펴보기</div><div class="m-desc">Connect 메뉴 접속 → 온보딩 팝업 확인</div></div><div class="xp-tag done">+20 XP</div></div>
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">my Canvas 살펴보기</div><div class="m-desc">my Canvas 메뉴 접속 → 온보딩 팝업 확인</div></div><div class="xp-tag done">+20 XP</div></div>
+            <div class="onboarding-complete"><div class="oc-icon">⭐</div><div><div class="oc-title">여정의 시작 배지 획득!</div><div class="oc-sub">2026.04.10 · 총 80 XP 획득</div></div></div>
+          </div>
+
+          <div class="mission-box-body" id="mb-today">
+            <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:var(--text2)">오늘 달성</span>
+              <div style="flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden">
+                <div style="width:66%;height:100%;background:var(--accent);border-radius:3px"></div>
+              </div>
+              <span style="font-size:12px;font-weight:700;color:var(--accent)">2 / 3</span>
+            </div>
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">출석</div><div class="m-desc">로그인 1회 · 당일 로그인 시 자동 완료</div></div><div class="xp-tag done">+10 XP</div></div>
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">인기 콘텐츠 확인</div><div class="m-desc">Contents 메뉴 접속 1회</div></div><div class="xp-tag done">+10 XP</div></div>
+            <div class="m-item"><div class="m-check"></div><div class="m-info"><div class="m-name">채널 업데이트 확인</div><div class="m-desc">Connect 메뉴 접속 1회</div></div><div class="xp-tag">+10 XP</div></div>
+          </div>
+        </div>
+
+        <!-- 이력 -->
+        <div class="history-box">
+          <div class="history-header">
+            <div class="history-title">📋 활동 이력</div>
+            <span class="history-count">최근 50건</span>
+          </div>
+          <div class="h-item"><div class="h-icon" style="background:#ecfdf5">📖</div><div class="h-info"><div class="h-name">과정 내 콘텐츠 학습 완료</div><div class="h-meta">2026.04.23 14:22 · 학습</div></div><div class="h-xp">+30 XP</div></div>
+          <div class="h-item"><div class="h-icon" style="background:#eff6ff">🔍</div><div class="h-info"><div class="h-name">키워드 검색</div><div class="h-meta">2026.04.23 13:40 · 콘텐츠 탐색</div></div><div class="h-xp">+20 XP</div></div>
+          <div class="h-item"><div class="h-icon" style="background:#f5f3ff">💬</div><div class="h-info"><div class="h-name">채널 내 댓글 작성</div><div class="h-meta">2026.04.23 11:15 · 커뮤니티</div></div><div class="h-xp">+30 XP</div></div>
+          <div class="h-item"><div class="h-icon" style="background:#fef9c3">😊</div><div class="h-info"><div class="h-name">이모지 반응</div><div class="h-meta">2026.04.23 10:52 · 커뮤니티</div></div><div class="h-xp">+20 XP</div></div>
+          <div class="h-item"><div class="h-icon" style="background:#f0fdf4">🎓</div><div class="h-info"><div class="h-name">마이크로러닝 수료</div><div class="h-meta">2026.04.22 16:44 · 학습</div></div><div class="h-xp">+30 XP</div></div>
+          <div class="h-item"><div class="h-icon" style="background:#fef3c7">❤️</div><div class="h-info"><div class="h-name">관심과정 등록 (찜하기)</div><div class="h-meta">2026.04.22 15:30 · 콘텐츠 탐색</div></div><div class="h-xp">+20 XP</div></div>
+          <div class="h-item"><div class="h-icon" style="background:#f5f3ff">✏️</div><div class="h-info"><div class="h-name">채널 내 게시글 작성</div><div class="h-meta">2026.04.22 14:02 · 커뮤니티</div></div><div class="h-xp">+30 XP</div></div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /panel-home -->
+
+  <!-- ════ 배지 패널 ════ -->
+  <div class="panel" id="panel-badge">
+    <div class="badge-panel-header">
+      <div class="badge-panel-title">🏅 내 배지</div>
+      <div class="badge-panel-sub">총 29개 · <span>10개 획득</span></div>
+    </div>
+
+    <!-- 온보딩 배지 -->
+    <div class="badge-onboard">
+      <span class="bo-emoji">⭐</span>
+      <div><div class="bo-name">여정의 시작</div><div class="bo-date">2026.04.10 획득</div></div>
+      <div class="bo-tag">온보딩 완료</div>
+    </div>
+
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">배지를 클릭하면 획득 조건을 확인할 수 있어요. 선택한 캐릭터와 관계없이 누구나 달성 가능해요.</div>
+
+    <!-- 4단계 × 7유형 그리드 -->
+    <div class="bp-grid-wrap">
+      <!-- 헤더 행 -->
+      <div class="bp-grid">
+        <div class="bp-header-cell">🎓<br>학습 마스터</div>
+        <div class="bp-header-cell">💬<br>지식 공유자</div>
+        <div class="bp-header-cell">🔁<br>꾸준 실천가</div>
+        <div class="bp-header-cell">🧭<br>탐험가</div>
+        <div class="bp-header-cell">⚡<br>효율 추구자</div>
+        <div class="bp-header-cell">🌊<br>몰입형 학습자</div>
+        <div class="bp-header-cell">🤝<br>멘토</div>
+      </div>
+      <!-- 1단계 -->
+      <div class="bp-grid">
+        <div class="badge-item unlocked" onclick="openBadge('학습자','🎓','학습 마스터','마이크로러닝 수료 1회',true,'2026.04.12')"><span class="b-emoji">🎓</span><div class="b-name">학습자</div></div>
+        <div class="badge-item unlocked" onclick="openBadge('참여자','💬','지식 공유자','채널 참여 1회 + 채널 접속 1회',true,'2026.04.11')"><span class="b-emoji">💬</span><div class="b-name">참여자</div></div>
+        <div class="badge-item unlocked" onclick="openBadge('실천자','📅','꾸준 실천가','로그인 1일 + 온보딩 미션 달성 1회',true,'2026.04.10')"><span class="b-emoji">📅</span><div class="b-name">실천자</div></div>
+        <div class="badge-item unlocked" onclick="openBadge('탐색자','🔍','탐험가','검색 1회 + 상품 조회 1회',true,'2026.04.11')"><span class="b-emoji">🔍</span><div class="b-name">탐색자</div></div>
+        <div class="badge-item unlocked" onclick="openBadge('수행자','⚡','효율 추구자','마이크로러닝 바로학습하기 1회',true,'2026.04.15')"><span class="b-emoji">⚡</span><div class="b-name">수행자</div></div>
+        <div class="badge-item locked" onclick="openBadge('집중자','🎧','몰입형 학습자','과정 내 콘텐츠 학습 완료 1회',false)"><span class="b-emoji">🎧</span><div class="b-name">집중자</div></div>
+        <div class="badge-item locked" onclick="openBadge('조력자','🤝','멘토','멘토/사내전문가 지정 + 게시글 작성 1회',false)"><span class="b-emoji">🤝</span><div class="b-name">조력자</div></div>
+      </div>
+      <!-- 2단계 -->
+      <div class="bp-grid">
+        <div class="badge-item unlocked" onclick="openBadge('숙련자','📚','학습 마스터','과정 수료 1회 + 마이크로러닝 수료 5회',true,'2026.04.18')"><span class="b-emoji">📚</span><div class="b-name">숙련자</div></div>
+        <div class="badge-item unlocked" onclick="openBadge('기여자','✍️','지식 공유자','게시글 작성 1개 + 댓글 3개 + 이모지 반응 3회',true,'2026.04.20')"><span class="b-emoji">✍️</span><div class="b-name">기여자</div></div>
+        <div class="badge-item unlocked" onclick="openBadge('지속자','🗓️','꾸준 실천가','로그인 3일 + 오늘의 미션 3회 달성',true,'2026.04.13')"><span class="b-emoji">🗓️</span><div class="b-name">지속자</div></div>
+        <div class="badge-item locked" onclick="openBadge('발견자','🗺️','탐험가','검색 3회 + 쇼츠 시청 1회 + 관심과정 등록 1회',false)"><span class="b-emoji">🗺️</span><div class="b-name">발견자</div></div>
+        <div class="badge-item locked" onclick="openBadge('효율가','⏱️','효율 추구자','마이크로러닝 바로학습 3회 + 쇼츠 3회',false)"><span class="b-emoji">⏱️</span><div class="b-name">효율가</div></div>
+        <div class="badge-item locked" onclick="openBadge('몰입자','🌊','몰입형 학습자','콘텐츠 학습 완료 3회 + 마이크로러닝 수료 3회',false)"><span class="b-emoji">🌊</span><div class="b-name">몰입자</div></div>
+        <div class="badge-item locked" onclick="openBadge('가이드','🧭','멘토','멘토/사내전문가 지정 + 게시글 3회 + 댓글 1회 + 채팅 3회',false)"><span class="b-emoji">🧭</span><div class="b-name">가이드</div></div>
+      </div>
+      <!-- 3단계 -->
+      <div class="bp-grid">
+        <div class="badge-item locked" onclick="openBadge('전문가','🏛️','학습 마스터','과정 수료 2회 + 마이크로러닝 수료 10회',false)"><span class="b-emoji">🏛️</span><div class="b-name">전문가</div></div>
+        <div class="badge-item locked" onclick="openBadge('인플루언서','📢','지식 공유자','게시글 10개 + 댓글 10개 + 이모지 20회 + 채팅 3회 + 공유 1회',false)"><span class="b-emoji">📢</span><div class="b-name">인플루언서</div></div>
+        <div class="badge-item locked" onclick="openBadge('연속 달성자','🏅','꾸준 실천가','로그인 10일 + 오늘의 미션 10회 달성',false)"><span class="b-emoji">🏅</span><div class="b-name">연속 달성자</div></div>
+        <div class="badge-item locked" onclick="openBadge('확장자','🌐','탐험가','검색 10회 + 쇼츠 3회 + 관심과정 3회 + 채널 검색 1회',false)"><span class="b-emoji">🌐</span><div class="b-name">확장자</div></div>
+        <div class="badge-item locked" onclick="openBadge('전략가','🎯','효율 추구자','마이크로러닝 바로학습 10회 + 쇼츠 10회',false)"><span class="b-emoji">🎯</span><div class="b-name">전략가</div></div>
+        <div class="badge-item locked" onclick="openBadge('딥러너','🧠','몰입형 학습자','콘텐츠 완료 10회 + 마이크로러닝 수료 10회',false)"><span class="b-emoji">🧠</span><div class="b-name">딥러너</div></div>
+        <div class="badge-item locked" onclick="openBadge('멘토','🌟','멘토','게시글 10회 + 댓글 10회 + 채팅 10회 + 이모지 반응 1회',false)"><span class="b-emoji">🌟</span><div class="b-name">멘토</div></div>
+      </div>
+      <!-- 4단계 -->
+      <div class="bp-grid">
+        <div class="badge-item locked" onclick="openBadge('박사','🎩','학습 마스터','과정 수료 5회 + 마이크로러닝 수료 30회',false)"><span class="b-emoji">🎩</span><div class="b-name">박사</div></div>
+        <div class="badge-item locked" onclick="openBadge('커뮤니티 리더','👑','지식 공유자','채널 개설 1회 + 게시글 10개 + 댓글 30개 + 화상 참여 1회 등',false)"><span class="b-emoji">👑</span><div class="b-name">커뮤니티 리더</div></div>
+        <div class="badge-item locked" onclick="openBadge('루틴 챔피언','🏆','꾸준 실천가','로그인 30일 + 오늘의 미션 30회 달성',false)"><span class="b-emoji">🏆</span><div class="b-name">루틴 챔피언</div></div>
+        <div class="badge-item locked" onclick="openBadge('멀티 지식인','🧬','탐험가','검색 15회 + 쇼츠 10회 + 관심과정 10회 + 보드 내 검색 1회',false)"><span class="b-emoji">🧬</span><div class="b-name">멀티 지식인</div></div>
+        <div class="badge-item locked" onclick="openBadge('퍼포먼스 마스터','🚀','효율 추구자','마이크로러닝 바로학습 30회 + 쇼츠 30회',false)"><span class="b-emoji">🚀</span><div class="b-name">퍼포먼스 마스터</div></div>
+        <div class="badge-item locked" onclick="openBadge('딥 마스터','💎','몰입형 학습자','콘텐츠 완료 30회 + 마이크로러닝 수료 30회',false)"><span class="b-emoji">💎</span><div class="b-name">딥 마스터</div></div>
+        <div class="badge-item locked" onclick="openBadge('최고의 멘토','✨','멘토','게시글 30회 + 댓글 30회 + 채팅 30회 + 이모지 10회',false)"><span class="b-emoji">✨</span><div class="b-name">최고의 멘토</div></div>
+      </div>
+    </div>
+  </div><!-- /panel-badge -->
+
+  <!-- ════ 랭킹 패널 ════ -->
+  <div class="panel" id="panel-ranking">
+    <div class="rank-outer">
+      <div class="rank-subtabs">
+        <div class="rank-subtab active" onclick="switchRank(this,'month')">이번달</div>
+        <div class="rank-subtab" onclick="switchRank(this,'all')">전체</div>
+      </div>
+
+      <!-- 이번달 -->
+      <div id="rank-month">
+        <div class="rank-item"><div class="rank-num g">1</div><div class="rank-av" style="background:#fffbeb;color:#d97706;border-color:rgba(217,119,6,0.3)">이</div><div class="rank-info"><div class="rank-name">이강은</div><div class="rank-sub">🌊 몰입형 학습자</div></div><div style="text-align:right"><div class="rank-xp">3,140 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num s">2</div><div class="rank-av" style="background:#f8fafc;color:#475569;border-color:rgba(71,85,105,0.2)">김</div><div class="rank-info"><div class="rank-name">김아름</div><div class="rank-sub">💬 지식 공유자</div></div><div style="text-align:right"><div class="rank-xp">2,870 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num b">3</div><div class="rank-av" style="background:#fef7ee;color:#c2410c;border-color:rgba(194,65,12,0.2)">박</div><div class="rank-info"><div class="rank-name">박보라</div><div class="rank-sub">🎓 학습 마스터</div></div><div style="text-align:right"><div class="rank-xp">2,540 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">4</div><div class="rank-av">홍</div><div class="rank-info"><div class="rank-name">홍순연</div><div class="rank-sub">🔁 꾸준 실천가</div></div><div style="text-align:right"><div class="rank-xp">2,210 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">5</div><div class="rank-av">김</div><div class="rank-info"><div class="rank-name">김민수</div><div class="rank-sub">⚡ 효율 추구자</div></div><div style="text-align:right"><div class="rank-xp">1,980 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">6</div><div class="rank-av">정</div><div class="rank-info"><div class="rank-name">정민혁</div><div class="rank-sub">🧭 탐험가</div></div><div style="text-align:right"><div class="rank-xp">1,750 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">7</div><div class="rank-av">송</div><div class="rank-info"><div class="rank-name">송재혁</div><div class="rank-sub">🎓 학습 마스터</div></div><div style="text-align:right"><div class="rank-xp">1,620 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">8</div><div class="rank-av">서</div><div class="rank-info"><div class="rank-name">서진</div><div class="rank-sub">💬 지식 공유자</div></div><div style="text-align:right"><div class="rank-xp">1,490 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">9</div><div class="rank-av">오</div><div class="rank-info"><div class="rank-name">오두용</div><div class="rank-sub">🤝 멘토</div></div><div style="text-align:right"><div class="rank-xp">1,360 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">10</div><div class="rank-av">황</div><div class="rank-info"><div class="rank-name">황용호</div><div class="rank-sub">🔁 꾸준 실천가</div></div><div style="text-align:right"><div class="rank-xp">1,240 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+        <div class="rank-gap">· · ·</div>
+        <div class="rank-item me"><div class="rank-num" style="color:var(--accent)">14</div><div class="rank-av" style="background:var(--accent-light);color:var(--accent);border-color:rgba(79,110,247,0.3)">최</div><div class="rank-info"><div class="rank-name" style="color:var(--accent)">최인화 <span style="font-size:11px;background:var(--accent);color:white;padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:400">나</span></div><div class="rank-sub">이번달 누적 경험치</div></div><div style="text-align:right"><div class="rank-my-xp">870 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">이번달 누적 경험치</div></div></div>
+      </div>
+
+      <!-- 전체 -->
+      <div id="rank-all" style="display:none">
+        <div class="rank-item"><div class="rank-num g">1</div><div class="rank-av" style="background:#fffbeb;color:#d97706;border-color:rgba(217,119,6,0.3)">김</div><div class="rank-info"><div class="rank-name">김태준</div><div class="rank-sub">🌊 몰입형 학습자</div></div><div style="text-align:right"><div class="rank-xp">28,450 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num s">2</div><div class="rank-av" style="background:#f8fafc;color:#475569;border-color:rgba(71,85,105,0.2)">이</div><div class="rank-info"><div class="rank-name">이영후</div><div class="rank-sub">🎓 학습 마스터</div></div><div style="text-align:right"><div class="rank-xp">24,810 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num b">3</div><div class="rank-av" style="background:#fef7ee;color:#c2410c;border-color:rgba(194,65,12,0.2)">신</div><div class="rank-info"><div class="rank-name">신준언</div><div class="rank-sub">⚡ 효율 추구자</div></div><div style="text-align:right"><div class="rank-xp">21,330 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">4</div><div class="rank-av">변</div><div class="rank-info"><div class="rank-name">변재명</div><div class="rank-sub">💬 지식 공유자</div></div><div style="text-align:right"><div class="rank-xp">19,760 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">5</div><div class="rank-av">박</div><div class="rank-info"><div class="rank-name">박성준</div><div class="rank-sub">🧭 탐험가</div></div><div style="text-align:right"><div class="rank-xp">17,230 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">6</div><div class="rank-av">이</div><div class="rank-info"><div class="rank-name">이준호</div><div class="rank-sub">🔁 꾸준 실천가</div></div><div style="text-align:right"><div class="rank-xp">15,840 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">7</div><div class="rank-av">정</div><div class="rank-info"><div class="rank-name">정해인</div><div class="rank-sub">🎓 학습 마스터</div></div><div style="text-align:right"><div class="rank-xp">13,580 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">8</div><div class="rank-av">박</div><div class="rank-info"><div class="rank-name">박수정</div><div class="rank-sub">💬 지식 공유자</div></div><div style="text-align:right"><div class="rank-xp">11,920 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">9</div><div class="rank-av">조</div><div class="rank-info"><div class="rank-name">조성조</div><div class="rank-sub">🤝 멘토</div></div><div style="text-align:right"><div class="rank-xp">10,470 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-item"><div class="rank-num">10</div><div class="rank-av">이</div><div class="rank-info"><div class="rank-name">이태희</div><div class="rank-sub">⚡ 효율 추구자</div></div><div style="text-align:right"><div class="rank-xp">9,120 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+        <div class="rank-gap">· · ·</div>
+        <div class="rank-item me"><div class="rank-num" style="color:var(--accent)">23</div><div class="rank-av" style="background:var(--accent-light);color:var(--accent);border-color:rgba(79,110,247,0.3)">최</div><div class="rank-info"><div class="rank-name" style="color:var(--accent)">최인화 <span style="font-size:11px;background:var(--accent);color:white;padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:400">나</span></div><div class="rank-sub">전체 누적 경험치</div></div><div style="text-align:right"><div class="rank-my-xp">1,240 XP</div><div style="font-size:10px;color:var(--text3);margin-top:2px">전체 누적 경험치</div></div></div>
+      </div>
+    </div>
+  </div><!-- /panel-ranking -->
+
+</div><!-- /page -->
+
+<!-- 배지 모달 -->
+<div class="modal-ov" id="badge-modal" onclick="closeBadge(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-x" onclick="document.getElementById('badge-modal').classList.remove('open')">✕</button>
+    <span class="m-emoji-big" id="m-emoji">🎓</span>
+    <div class="m-badge-name" id="m-name">학습자</div>
+    <div class="m-persona-label" id="m-persona">학습 마스터 유형 배지</div>
+    <div class="m-status-tag" id="m-status"></div>
+    <div class="m-divider"></div>
+    <div class="m-cond-title">획득 조건</div>
+    <div id="m-cond"></div>
+  </div>
+</div>
+
+<script>
+// 온보딩 팝업
+function closePopup() { document.getElementById('popup-ov').style.display = 'none'; }
+
+// 메인 탭
+function switchMain(tab) {
+  ['home','badge','ranking'].forEach(t => {
+    document.getElementById('panel-' + t).classList.toggle('active', t === tab);
+  });
+  document.querySelectorAll('.main-tab').forEach((el, i) => {
+    el.classList.toggle('active', ['home','badge','ranking'][i] === tab);
+  });
+}
+
+// 미션 박스 탭
+function switchMission(el, tab) {
+  document.querySelectorAll('.mission-box-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mb-onboarding').style.display = tab === 'onboarding' ? 'block' : 'none';
+  document.getElementById('mb-today').style.display = tab === 'today' ? 'block' : 'none';
+}
+
+// 랭킹 서브탭
+function switchRank(el, tab) {
+  document.querySelectorAll('.rank-subtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('rank-month').style.display = tab === 'month' ? 'block' : 'none';
+  document.getElementById('rank-all').style.display = tab === 'all' ? 'block' : 'none';
+}
+
+// 배지 모달
+function openBadge(name, emoji, persona, cond, unlocked, date) {
+  document.getElementById('m-emoji').textContent = emoji;
+  document.getElementById('m-name').textContent = name;
+  document.getElementById('m-persona').textContent = persona + ' 유형 배지';
+  const st = document.getElementById('m-status');
+  st.className = 'm-status-tag ' + (unlocked ? 'ok' : 'no');
+  st.textContent = unlocked ? ('✓ 획득 완료' + (date ? ' · ' + date : '')) : '아직 미획득';
+  document.getElementById('m-cond').innerHTML = cond.split('+').map(c =>
+    `<div class="m-cond-item">${c.trim()}</div>`
+  ).join('');
+  document.getElementById('badge-modal').classList.add('open');
+}
+function closeBadge(e) { if(e.target === document.getElementById('badge-modal')) document.getElementById('badge-modal').classList.remove('open'); }
+
+// XP 바 애니메이션
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const f = document.getElementById('xp-fill');
+    if(f) f.style.width = '82.6%';
+  }, 600);
+});
+</script>
+</body>
+</html>
