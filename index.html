@@ -416,6 +416,198 @@ body {
 .badge-item { padding: 10px 6px; }
 .rank-sub { font-size: 11px; color: var(--text3); }
 
+/* ── 레벨업 버튼 영역 ── */
+.levelup-area {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--accent-light);
+  border: 1px solid rgba(79,110,247,0.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+.levelup-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.btn-levelup {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: not-allowed;
+  flex-shrink: 0;
+  background: #c7d0f8;
+  border: 1.5px solid #a5b1f5;
+  color: #8899e8;
+  transition: all 0.2s;
+}
+.btn-levelup:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(79,110,247,0.35);
+}
+.btn-levelup:not(:disabled):hover { background: #3d5ee0; transform: translateY(-1px); }
+
+/* ── 커스텀 미션 ── */
+.custom-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--purple);
+  color: white;
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 4px;
+  vertical-align: middle;
+  letter-spacing: 0.3px;
+}
+.custom-mission-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.custom-mission-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--purple);
+}
+.custom-period {
+  font-size: 11px;
+  color: var(--text3);
+  background: var(--bg3);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+.custom-reward-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--purple-bg);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--purple);
+}
+.custom-reward-banner strong { font-weight: 700; }
+
+/* ══ 캐릭터 선택 모달 ══ */
+.char-modal-ov {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 400;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease;
+}
+.char-modal-ov.open { display: flex; }
+.char-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 28px 24px 24px;
+  width: 680px;
+  max-width: calc(100vw - 32px);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.34,1.2,0.64,1);
+}
+.char-modal-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--bg3); border: none; cursor: pointer;
+  font-size: 14px; display: flex; align-items: center;
+  justify-content: center; color: var(--text2);
+}
+.char-modal-title {
+  font-size: 18px; font-weight: 800;
+  letter-spacing: -0.5px; margin-bottom: 4px;
+}
+.char-modal-sub {
+  font-size: 13px; color: var(--text2); margin-bottom: 20px;
+}
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+@media (max-width: 680px) {
+  .char-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 420px) {
+  .char-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.char-card {
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 8px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: var(--bg3);
+  position: relative;
+}
+.char-card:hover { border-color: var(--accent2); background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,110,247,0.15); }
+.char-card.selected { border-color: var(--accent); background: var(--accent-light); box-shadow: 0 0 0 3px rgba(79,110,247,0.15); }
+.char-card.selected::after {
+  content: '✓';
+  position: absolute; top: 6px; right: 7px;
+  width: 16px; height: 16px;
+  background: var(--accent); color: white;
+  border-radius: 50%; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 16px;
+}
+.char-emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+.char-name { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; line-height: 1.3; word-break: keep-all; }
+.char-trait { font-size: 10px; color: var(--text2); line-height: 1.3; word-break: keep-all; }
+
+.char-desc-panel {
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  min-height: 72px;
+  transition: all 0.2s;
+}
+.char-desc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.char-desc-emoji { font-size: 22px; }
+.char-desc-name { font-size: 14px; font-weight: 700; }
+.char-desc-trait { font-size: 12px; color: var(--accent); font-weight: 600; background: var(--accent-light); border-radius: 20px; padding: 2px 8px; }
+.char-desc-text { font-size: 12px; color: var(--text2); line-height: 1.7; }
+
+.char-modal-btn {
+  width: 100%; padding: 13px;
+  background: var(--accent); color: white;
+  border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.2s;
+}
+.char-modal-btn:hover { background: #3d5ee0; transform: translateY(-1px); }
+
 /* ── 반응형 ── */
 @media (max-width: 800px) {
   .home-grid { grid-template-columns: 1fr; }
@@ -567,7 +759,7 @@ body {
               <div class="mission-level-main">레벨 <span>4</span></div>
               
             </div>
-            <button class="btn-change" onclick="alert('캐릭터 변경 화면으로 이동합니다')">
+            <button class="btn-change" onclick="openCharacterSelect()">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6a4 4 0 018 0M10 6a4 4 0 01-8 0" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 4.5l1.5 1.5-1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               캐릭터 변경
             </button>
@@ -581,6 +773,18 @@ body {
             <div class="xp-fill" id="xp-fill" style="width:0%"></div>
           </div>
           <div class="xp-remain">앞으로 260 XP 더 모으면 레벨업 🚀</div>
+
+          <!-- 레벨업 버튼 영역 -->
+          <div class="levelup-area">
+            <div class="levelup-notice">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              경험치를 충족하면 레벨업이 가능해요!
+            </div>
+            <button class="btn-levelup" disabled>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M4 7l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              레벨업
+            </button>
+          </div>
 
           <div class="steps-row" style="margin-top:18px">
             <div class="step done" title="Lv.1"></div>
@@ -626,7 +830,38 @@ body {
         <div class="mission-box">
           <div class="mission-box-tabs">
             <div class="mission-box-tab active" onclick="switchMission(this,'today')">오늘의 미션</div>
+            <div class="mission-box-tab" onclick="switchMission(this,'custom')">
+              커스텀 미션
+              <span class="custom-badge">관리자</span>
+            </div>
             <div class="mission-box-tab" onclick="switchMission(this,'onboarding')">온보딩 미션</div>
+          </div>
+
+          <!-- 커스텀 미션 패널 -->
+          <div class="mission-box-body" id="mb-custom" style="display:none">
+            <div class="custom-mission-header">
+              <div class="custom-mission-label">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M12 2l2 2-9 9-3 1 1-3 9-9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                교육담당자가 추가한 미션
+              </div>
+              <span class="custom-period">~2026.05.31</span>
+            </div>
+            <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:var(--text2)">달성 현황</span>
+              <div style="flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden">
+                <div style="width:40%;height:100%;background:var(--purple);border-radius:3px"></div>
+              </div>
+              <span style="font-size:12px;font-weight:700;color:var(--purple)">2 / 5</span>
+            </div>
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">신규 직원 온보딩 과정 수강신청</div><div class="m-desc">2026 상반기 필수 과정 수강신청 완료</div></div><div class="xp-tag done">+30 XP</div></div>
+            <div class="m-item done"><div class="m-check done"></div><div class="m-info"><div class="m-name">팀 채널 참여하기</div><div class="m-desc">부서 전용 채널 1개 이상 참여</div></div><div class="xp-tag done">+20 XP</div></div>
+            <div class="m-item"><div class="m-check"></div><div class="m-info"><div class="m-name">리더십 쇼츠 3편 시청</div><div class="m-desc">리더십 관련 쇼츠 영상 3편 완료</div></div><div class="xp-tag">+30 XP</div></div>
+            <div class="m-item"><div class="m-check"></div><div class="m-info"><div class="m-name">팀 채널에 자기소개 게시글 작성</div><div class="m-desc">부서 채널에 자기소개 글 1건 이상 작성</div></div><div class="xp-tag">+30 XP</div></div>
+            <div class="m-item"><div class="m-check"></div><div class="m-info"><div class="m-name">신규 직원 온보딩 과정 수료</div><div class="m-desc">수강신청 완료 후 과정 전체 수료 처리</div></div><div class="xp-tag">+50 XP</div></div>
+            <div class="custom-reward-banner">
+              <span>🎁</span>
+              <span>모든 미션 달성 시 <strong>보너스 200 XP</strong> 추가 지급</span>
+            </div>
           </div>
 
           <div class="mission-box-body" id="mb-onboarding" style="display:none">
@@ -799,7 +1034,110 @@ body {
   </div>
 </div>
 
+<!-- ══ 캐릭터 선택 모달 ══ -->
+<div class="char-modal-ov" id="char-modal-ov" onclick="closeCharacterSelect(event)">
+  <div class="char-modal" onclick="event.stopPropagation()">
+    <button class="char-modal-close" onclick="closeCharacterSelect()">✕</button>
+    <div class="char-modal-title">캐릭터 선택</div>
+    <div class="char-modal-sub">키우고 싶은 페르소나 유형을 선택해주세요. 언제든지 변경할 수 있어요.</div>
+
+    <div class="char-grid">
+      <div class="char-card selected" id="char-0" onclick="selectChar(0)" onmouseenter="hoverChar(0)">
+        <span class="char-emoji">🎓</span>
+        <div class="char-name">학습 마스터</div>
+        <div class="char-trait">깊이/전문성</div>
+      </div>
+      <div class="char-card" id="char-1" onclick="selectChar(1)" onmouseenter="hoverChar(1)">
+        <span class="char-emoji">💬</span>
+        <div class="char-name">지식 공유자</div>
+        <div class="char-trait">확산/소통</div>
+      </div>
+      <div class="char-card" id="char-2" onclick="selectChar(2)" onmouseenter="hoverChar(2)">
+        <span class="char-emoji">🔁</span>
+        <div class="char-name">꾸준 실천가</div>
+        <div class="char-trait">반복/지속</div>
+      </div>
+      <div class="char-card" id="char-3" onclick="selectChar(3)" onmouseenter="hoverChar(3)">
+        <span class="char-emoji">🧭</span>
+        <div class="char-name">탐험가</div>
+        <div class="char-trait">다양성/확장</div>
+      </div>
+      <div class="char-card" id="char-4" onclick="selectChar(4)" onmouseenter="hoverChar(4)">
+        <span class="char-emoji">⚡</span>
+        <div class="char-name">효율 추구자</div>
+        <div class="char-trait">최적화/속도</div>
+      </div>
+      <div class="char-card" id="char-5" onclick="selectChar(5)" onmouseenter="hoverChar(5)">
+        <span class="char-emoji">🌊</span>
+        <div class="char-name">몰입형 학습자</div>
+        <div class="char-trait">집중/몰입</div>
+      </div>
+      <div class="char-card" id="char-6" onclick="selectChar(6)" onmouseenter="hoverChar(6)">
+        <span class="char-emoji">🤝</span>
+        <div class="char-name">멘토</div>
+        <div class="char-trait">영향력/지원</div>
+      </div>
+    </div>
+
+    <!-- 선택 캐릭터 설명 -->
+    <div class="char-desc-panel" id="char-desc">
+      <div class="char-desc-top">
+        <span class="char-desc-emoji">🎓</span>
+        <span class="char-desc-name">학습 마스터</span>
+        <span class="char-desc-trait">깊이 · 전문성</span>
+      </div>
+      <div class="char-desc-text" id="char-desc-text">학습을 시작하면 끝까지 완주하는 유형이에요. 과정 수료와 마이크로러닝 완료를 통해 경험치를 쌓고, 지식의 깊이와 전문성을 키우며 성장합니다.</div>
+    </div>
+
+    <button class="char-modal-btn" onclick="confirmCharacter()">이 캐릭터로 선택</button>
+  </div>
+</div>
+
 <script>
+// 캐릭터 데이터
+const characters = [
+  { emoji: '🎓', name: '학습 마스터', trait: '깊이 · 전문성', desc: '학습을 시작하면 끝까지 완주하는 유형이에요. 과정 수료와 마이크로러닝 완료를 통해 경험치를 쌓고, 지식의 깊이와 전문성을 키우며 성장합니다.' },
+  { emoji: '💬', name: '지식 공유자', trait: '확산 · 소통', desc: '읽고, 반응하고, 직접 글을 씁니다. 댓글과 게시글 작성, 이모지 반응 등 커뮤니티 활동을 통해 영향력을 키워가는 유형이에요.' },
+  { emoji: '🔁', name: '꾸준 실천가', trait: '반복 · 지속', desc: '매일 빠짐없이 접속하고 오늘의 미션을 꾸준히 완료하는 유형이에요. 작은 습관의 반복이 결국 가장 강한 학습자를 만들어냅니다.' },
+  { emoji: '🧭', name: '탐험가', trait: '다양성 · 확장', desc: '다양한 콘텐츠를 검색하고 탐색하며 여러 분야에 관심을 가지는 유형이에요. 넓은 시야와 다양한 경험으로 복합적인 전문성을 쌓아갑니다.' },
+  { emoji: '⚡', name: '효율 추구자', trait: '최적화 · 속도', desc: '짧고 효율적인 학습을 선호하는 유형이에요. 마이크로러닝과 쇼츠 영상을 통해 핵심만 빠르게 습득하며 최적화된 학습 경로를 만들어갑니다.' },
+  { emoji: '🌊', name: '몰입형 학습자', trait: '집중 · 몰입', desc: '한번 시작하면 깊게 집중하는 유형이에요. 긴 학습 세션과 콘텐츠 완료 경험을 통해 완전한 이해와 깊은 몰입의 경험을 추구합니다.' },
+  { emoji: '🤝', name: '멘토', trait: '영향력 · 지원', desc: '나누고 함께 성장하는 유형이에요. 멘토 또는 사내전문가로서 게시글과 댓글을 통해 동료의 성장을 지원하며 커뮤니티의 중심이 됩니다.' },
+];
+
+let selectedChar = 0;
+let hoveredChar = 0;
+
+function openCharacterSelect() {
+  document.getElementById('char-modal-ov').classList.add('open');
+  renderCharDesc(selectedChar);
+}
+function closeCharacterSelect(e) {
+  if (!e || e.target === document.getElementById('char-modal-ov')) {
+    document.getElementById('char-modal-ov').classList.remove('open');
+  }
+}
+function selectChar(idx) {
+  selectedChar = idx;
+  document.querySelectorAll('.char-card').forEach((c, i) => c.classList.toggle('selected', i === idx));
+  renderCharDesc(idx);
+}
+function hoverChar(idx) {
+  renderCharDesc(idx);
+}
+function renderCharDesc(idx) {
+  const c = characters[idx];
+  document.querySelector('.char-desc-emoji').textContent = c.emoji;
+  document.querySelector('.char-desc-name').textContent = c.name;
+  document.querySelector('.char-desc-trait').textContent = c.trait;
+  document.getElementById('char-desc-text').textContent = c.desc;
+}
+function confirmCharacter() {
+  const c = characters[selectedChar];
+  document.querySelector('.persona-pill').textContent = c.emoji + ' ' + c.name;
+  document.getElementById('char-modal-ov').classList.remove('open');
+}
+
 // 온보딩 팝업
 function closePopup() { document.getElementById('popup-ov').style.display = 'none'; }
 
@@ -819,6 +1157,7 @@ function switchMission(el, tab) {
   el.classList.add('active');
   document.getElementById('mb-onboarding').style.display = tab === 'onboarding' ? 'block' : 'none';
   document.getElementById('mb-today').style.display = tab === 'today' ? 'block' : 'none';
+  document.getElementById('mb-custom').style.display = tab === 'custom' ? 'block' : 'none';
 }
 
 // 랭킹 서브탭
