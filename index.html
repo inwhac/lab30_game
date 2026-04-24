@@ -608,6 +608,50 @@ body {
 }
 .char-modal-btn:hover { background: #3d5ee0; transform: translateY(-1px); }
 
+/* ── 커스텀 배지 ── */
+.custom-badge-section {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1.5px dashed rgba(79,110,247,0.2);
+}
+.custom-badge-header { margin-bottom: 16px; }
+.custom-badge-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 700; color: var(--text);
+  margin-bottom: 6px;
+}
+.custom-badge-tag {
+  display: inline-flex; align-items: center;
+  background: var(--purple-bg); border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 6px; padding: 3px 9px;
+  font-size: 11px; font-weight: 700; color: var(--purple);
+}
+.custom-badge-desc { font-size: 12px; color: var(--text2); }
+.custom-badge-grid {
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.custom-badge-item {
+  width: 110px; position: relative;
+  border: 1.5px dashed rgba(139,92,246,0.25) !important;
+}
+.custom-badge-item.unlocked {
+  background: #faf8ff !important;
+  border: 1.5px solid rgba(139,92,246,0.3) !important;
+}
+.custom-badge-item:hover { border-color: var(--purple) !important; }
+.custom-badge-new {
+  position: absolute; top: -6px; right: -6px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--purple); border: 2px solid white;
+}
+.custom-badge-acquired {
+  font-size: 10px; font-weight: 700; color: var(--purple);
+  margin-top: 4px;
+}
+.custom-badge-period {
+  font-size: 10px; color: var(--text3); margin-top: 4px;
+}
+
 /* ── 반응형 ── */
 @media (max-width: 800px) {
   .home-grid { grid-template-columns: 1fr; }
@@ -919,7 +963,7 @@ body {
       <div class="bo-tag">온보딩 완료</div>
     </div>
 
-    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">배지를 클릭하면 획득 조건을 확인할 수 있어요. 선택한 캐릭터와 관계없이 누구나 달성 가능해요.</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">배지를 클릭하면 획득 조건을 확인할 수 있어요.</div>
 
     <!-- 4단계 × 7유형 그리드 -->
     <div class="bp-grid-wrap">
@@ -974,6 +1018,42 @@ body {
         <div class="badge-item locked" onclick="openBadge('최고의 멘토','✨','멘토','게시글 30회 + 댓글 30회 + 채팅 30회 + 이모지 10회',false)"><span class="b-emoji">✨</span><div class="b-name">최고의 멘토</div></div>
       </div>
     </div>
+
+    <!-- ── 커스텀 배지 영역 ── -->
+    <div class="custom-badge-section">
+      <div class="custom-badge-header">
+        <div class="custom-badge-title">
+          우리회사 전용 배지
+        </div>
+        <div class="custom-badge-desc">우리회사 전용 배지에요. 달성 조건을 확인하고 배지 획득에 도전해보세요!</div>
+      </div>
+      <div class="custom-badge-grid">
+
+        <!-- 커스텀배지1 — 획득 완료 -->
+        <div class="badge-item unlocked custom-badge-item" onclick="openCustomBadge('커스텀배지1','🏅','우리 팀 러닝런치 챌린지','교육담당자 지정 커스텀 배지','러닝런치 세션 게시글 작성 1회 + 댓글 작성 3회 + 참여자 채널 참여 1회',true,'2026.04.15')">
+          <div class="custom-badge-new"></div>
+          <span class="b-emoji">🏅</span>
+          <div class="b-name">커스텀배지1</div>
+          <div class="custom-badge-acquired">획득 완료</div>
+        </div>
+
+        <!-- 커스텀배지2 — 미획득 -->
+        <div class="badge-item locked custom-badge-item" onclick="openCustomBadge('커스텀배지2','🌱','성장 챌린지 위크','교육담당자 지정 커스텀 배지','챌린지 기간 내 콘텐츠 학습 완료 5회 + 소감 게시글 작성 1회',false)">
+          <span class="b-emoji">🌱</span>
+          <div class="b-name">커스텀배지2</div>
+          <div class="custom-badge-period">~2026.05.31</div>
+        </div>
+
+        <!-- 커스텀배지3 — 미획득 -->
+        <div class="badge-item locked custom-badge-item" onclick="openCustomBadge('커스텀배지3','🔥','이달의 열정왕','교육담당자 지정 커스텀 배지','이번달 누적 경험치 TOP 3 달성',false)">
+          <span class="b-emoji">🔥</span>
+          <div class="b-name">커스텀배지3</div>
+          <div class="custom-badge-period">매월 말일 선정</div>
+        </div>
+
+      </div>
+    </div>
+
   </div><!-- /panel-badge -->
 
   <!-- ════ 랭킹 패널 ════ -->
@@ -1182,6 +1262,22 @@ function openBadge(name, emoji, persona, cond, unlocked, date) {
   document.getElementById('badge-modal').classList.add('open');
 }
 function closeBadge(e) { if(e.target === document.getElementById('badge-modal')) document.getElementById('badge-modal').classList.remove('open'); }
+
+// 커스텀 배지 모달 (openBadge 재활용 + 커스텀 표시)
+function openCustomBadge(name, emoji, subname, persona, cond, unlocked, date) {
+  document.getElementById('m-emoji').textContent = emoji;
+  document.getElementById('m-name').textContent = name;
+  // persona 라인에 커스텀 배지 서브네임 + 태그
+  document.getElementById('m-persona').innerHTML =
+    '<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;color:#8b5cf6">교육담당자 지정</span> ' + subname;
+  const st = document.getElementById('m-status');
+  st.className = 'm-status-tag ' + (unlocked ? 'ok' : 'no');
+  st.textContent = unlocked ? ('✓ 획득 완료' + (date ? ' · ' + date : '')) : '아직 미획득';
+  document.getElementById('m-cond').innerHTML = cond.split('+').map(c =>
+    `<div class="m-cond-item">${c.trim()}</div>`
+  ).join('');
+  document.getElementById('badge-modal').classList.add('open');
+}
 
 // XP 바 애니메이션
 window.addEventListener('load', () => {
